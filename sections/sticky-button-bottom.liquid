@@ -1,0 +1,37 @@
+  <div class="">
+    <button class="product-form__submit button button--full-width add-to-cart-button" onclick="document.getElementById('primaryButton').click()">ADD TO CART</button>
+  </div>
+
+<style>
+  .sticky-button-bottom{
+          position: sticky;
+    bottom: 0px;
+    padding: 1rem;
+    background: white;
+    z-index: 4;
+     opacity: 1;
+    transition: all 1s ease;
+  }
+html[sr-scroll-top="0"] .sticky-button-bottom,
+body[sr-scroll-top="0"] .sticky-button-bottom{opacity: 0;}
+
+</style>
+<script>
+  
+</script>
+{% schema %}
+{
+  "name": "Sticky Button Bottom",
+  "tag": "section",
+  "class": "sticky-button-bottom large-up-hide medium-hide",
+  "settings": [
+    
+  ],
+  "presets": [
+    {
+      "name": "Sticky Button Bottom"
+
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,1043 @@
+{{ 'component-accordion.css' | asset_url | stylesheet_tag }}
+{{ 'collapsible-content.css' | asset_url | stylesheet_tag }}
+{{ 'component-rte.css' | asset_url | stylesheet_tag }}
+{{ 'custom-collapsible-content-with-blocks.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="collapsible-content my-collapsible collapsible-{{ section.settings.layout }}-layout isolate{% if section.settings.layout == 'section' %} page-width{% elsif section.settings.layout == 'none' %} content-container content-container--full-width{% endif %}">
+    <div class="collapsible-content__wrapper section-{{ section.id }}-padding{% if section.settings.layout == 'section' %} content-container color-{{ section.settings.container_color_scheme }} gradient{% endif %}">
+      <div class="page-width">
+        <div class="collapsible-content__header" style="text-align: {{ section.settings.heading_alignment }};">
+          {%- if section.settings.caption != blank -%}
+            <p class="caption-with-letter-spacing">{{ section.settings.caption | escape }}</p>
+          {% endif %}
+          {%- if section.settings.heading != blank -%}
+            <h2 class="collapsible-content__heading {{ section.settings.heading_size }}">
+              {{ section.settings.heading | escape }}
+            </h2>
+          {%- else -%}
+            <h2 class="visually-hidden">{{ 'accessibility.collapsible_content_title' | t }}</h2>
+          {% endif %}
+        </div>
+        <div class="grid grid--1-col grid--2-col-tablet collapsible-content__grid{% if section.settings.desktop_layout == 'image_second' %} collapsible-content__grid--reverse{% endif %}">
+          {%- if section.settings.image != blank -%}
+            <div class="grid__item collapsible-content__grid-item">
+              <div
+                class="collapsible-content__media collapsible-content__media--{{ section.settings.image_ratio }} media global-media-settings gradient"
+                {% if section.settings.image_ratio == 'adapt' %}
+                  style="padding-bottom: {{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%;"
+                {% endif %}
+              >
+                {%- capture sizes -%}
+                  (min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 | divided_by: 2 }}px,
+                  (min-width: 750px) calc((100vw - 130px) / 2), calc((100vw - 50px) / 2)
+                {%- endcapture -%}
+                {{
+                  section.settings.image
+                  | image_url: width: 1500
+                  | image_tag: loading: 'lazy', sizes: sizes, widths: '165, 360, 535, 750, 1070, 1250, 1500'
+                }}
+              </div>
+            </div>
+          {% endif %}
+          <div class="grid__item">
+            
+        {%- for block in section.blocks -%}
+          {% case block.type %}
+            {%- when 'heading' -%}
+              <h2 class="image-with-text__heading {{ block.settings.heading | handleize }} {{ block.settings.heading_size }}" {{ block.shopify_attributes }}>
+                {{ block.settings.heading | escape }}
+              </h2>
+            {%- when 'image-with-text-blocks' -%}
+              <div
+                class="accordion {{ block.settings.heading | handleize }} {% if section.settings.layout == 'row' %} content-container color-{{ section.settings.container_color_scheme }} gradient{% endif %}"
+                {{ block.shopify_attributes }}
+              >
+                <details
+                  id="Details-{{ block.id }}-{{ section.id }}"
+                  {% if section.settings.open_first_collapsible_row and forloop.first %}
+                    open
+                  {% endif %}
+                open >
+                  <summary id="Summary-{{ block.id }}-{{ section.id }}">
+                  {% comment %}  {% render 'icon-accordion', icon: block.settings.icon %} {% endcomment %}
+                    <h3 class="accordion__title h4">
+                      {{ block.settings.heading | default: block.settings.page.title }}
+                    </h3>
+                    {% render 'icon-caret' %}
+                  </summary>
+                  <div
+                    class="accordion__content rte"
+                    id="CollapsibleAccordion-{{ block.id }}-{{ section.id }}"
+                    role="region"
+                    aria-labelledby="Summary-{{ block.id }}-{{ section.id }}"
+                  >
+            {% if block.settings.enable_checkbox %}
+            <div class="help">
+              <p class="accordion-text">{{ block.settings.help_text }}</p>
+            <div class="support">
+              <h4>{{ block.settings.support_text1 }}</h4>
+            <h4>{{ block.settings.support_text2 }}</h4>
+            <h4>{{ block.settings.support_text3 }}</h4>
+            <h4>{{ block.settings.support_text4 }}</h4>
+            </div>
+            </div>
+              {% endif %}
+                    <p class="accordion-text">{{ block.settings.blocks-text }}</p>
+
+                    <div class="reasons-wrap">
+                      <div class="icon-txt-wrap">
+                        <div class="reasons-icon">
+                          <img src="{{ block.settings.blocks-img1 | img_url: 'mater'}}" alt="" loading="lazy">
+                        </div>
+                        <h4 class="reasons-text accordion-text">
+                          {{ block.settings.blocks-text1 }}
+                        </h4>
+                      </div>
+                      <div class="icon-txt-wrap">
+                        <div class="reasons-icon">
+                          <img src="{{ block.settings.blocks-img2 | img_url: 'mater'}}" alt="" loading="lazy">
+                        </div>
+                        <h4 class="reasons-text accordion-text">
+                          {{ block.settings.blocks-text2 }}
+                        </h4>
+                      </div>
+                      <div class="icon-txt-wrap">
+                        <div class="reasons-icon">
+                          <img src="{{ block.settings.blocks-img3 | img_url: 'mater'}}" alt="" loading="lazy">
+                        </div>
+                        <h4 class="reasons-text accordion-text">
+                          {{ block.settings.blocks-text3 }}
+                        </h4>
+                      </div>
+                      <div class="icon-txt-wrap">
+                        <div class="reasons-icon">
+                          <img src="{{ block.settings.blocks-img4 | img_url: 'mater'}}" alt="" loading="lazy">
+                        </div>
+                        <h4 class="reasons-text accordion-text">
+                          {{ block.settings.blocks-text4 }}
+                        </h4>
+                      </div>
+                    </div>
+                    
+                  </div>
+                </details>
+              </div>
+
+          {%- when 'image-with-text-2col-list' -%}
+
+
+              <div
+                class="accordion {{ block.settings.heading | handleize }} {% if section.settings.layout == 'row' %} content-container color-{{ section.settings.container_color_scheme }} gradient{% endif %}"
+                {{ block.shopify_attributes }}
+              >
+                <details
+                  id="Details-{{ block.id }}-{{ section.id }}"
+                  {% if section.settings.open_first_collapsible_row and forloop.first %}
+                    open
+                  {% endif %}
+                open>
+                  <summary id="Summary-{{ block.id }}-{{ section.id }}">
+                    <h3 class="accordion__title h4">
+                      {{ block.settings.heading | default: block.settings.page.title }}
+                    </h3>
+                    {% render 'icon-caret' %}
+                  </summary>
+                  <div
+                    class="accordion__content rte"
+                    id="CollapsibleAccordion-{{ block.id }}-{{ section.id }}"
+                    role="region"
+                    aria-labelledby="Summary-{{ block.id }}-{{ section.id }}"
+                  >
+                    <div class="how-touse-wrap">
+                  <p class="how-touse-text">
+                   {{ block.settings.how-touse }}
+                  </p>
+                  <div class="how-touse-pointers">
+                    <ul>
+                      <li>
+                        <span>
+                          <img src="{{ block.settings.how-touse-img1 | img_url: 'mater'}}" alt="Step 1" loading="lazy">
+                        </span>
+                        <p class="accordion-text">
+                          {{ block.settings.how-touse-1 }}
+                        </p>
+                      </li>
+                      <li>
+                        <span>
+                          <img src="{{ block.settings.how-touse-img2 | img_url: 'mater'}}" alt="Step 2" loading="lazy">
+                        </span>
+                        <p class="accordion-text">
+                          {{ block.settings.how-touse-2 }}
+                        </p>
+                      </li>
+                      <li>
+                        <span>
+                          <img src="{{ block.settings.how-touse-img3 | img_url: 'mater'}}" alt="Step 3" loading="lazy">
+                        </span>
+                        <p class="accordion-text">
+                          {{ block.settings.how-touse-3 }}
+                        </p>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              <div class="science-button">
+                <a href="{{ block.settings.btn2 }}">Shop Now
+                  <svg fill="none" height="14" viewBox="0 0 14 14" width="14" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.1715 1.34315L11.8284 7L6.1715 12.6569" stroke-width="2" stroke="white"></path>
+                  </svg>
+                </a>
+              </div>
+                    
+                  </div>
+                </details>
+              </div>
+  
+            {%- when 'image-with-text-grid' -%}
+              <div
+                class="accordion {{ block.settings.heading | handleize }} {% if section.settings.layout == 'row' %} content-container color-{{ section.settings.container_color_scheme }} gradient{% endif %}"
+                {{ block.shopify_attributes }}
+              >
+                <details
+                  id="Details-{{ block.id }}-{{ section.id }}"
+                  {% if section.settings.open_first_collapsible_row and forloop.first %}
+                    open
+                  {% endif %}
+                >
+                  <summary id="Summary-{{ block.id }}-{{ section.id }}">
+                    <h3 class="accordion__title h4">
+                      {{ block.settings.heading | default: block.settings.page.title }}
+                    </h3>
+                    {% render 'icon-caret' %}
+                  </summary>
+                  <div
+                    class="accordion__content rte"
+                    id="CollapsibleAccordion-{{ block.id }}-{{ section.id }}"
+                    role="region"
+                    aria-labelledby="Summary-{{ block.id }}-{{ section.id }}"
+                  >
+                    <div class="accordion__item__body">
+                      <div class="info_ingredients">
+                        
+               {% render 'ingredient-single', 
+                 image:block.settings.img-with-text-img-grid-1 ,
+                 title:block.settings.img-with-text-heading-grid-1 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-1 ,
+                 body:block.settings.img-with-text-grid-1  %}
+              
+                        
+               {% render 'ingredient-single', 
+                 image:block.settings.img-with-text-img-grid-2 ,
+                 title:block.settings.img-with-text-heading-grid-2 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-2 ,
+                 body:block.settings.img-with-text-grid-2  %}
+              
+                        
+               {% render 'ingredient-single', 
+                 image:block.settings.img-with-text-img-grid-3 ,
+                 title:block.settings.img-with-text-heading-grid-3 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-3 ,
+                 body:block.settings.img-with-text-grid-3  %}
+              
+                        
+               {% render 'ingredient-single', 
+                 image:block.settings.img-with-text-img-grid-4 ,
+                 title:block.settings.img-with-text-heading-grid-4 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-4 ,
+                 body:block.settings.img-with-text-grid-4  %}
+              
+            {% if block.settings.img-with-text-grid-5 != blank %}
+
+               {% render 'ingredient-single', 
+                 image:block.settings.img-with-text-img-grid-5 ,
+                 title:block.settings.img-with-text-heading-grid-5 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-5 ,
+                 body:block.settings.img-with-text-grid-5  %}
+              
+              {% endif %}
+
+             {% if block.settings.img-with-text-grid-6 != blank %}
+                        
+               {% render 'ingredient-single', 
+                 image:block.settings.img-with-text-img-grid-6 ,
+                 title:block.settings.img-with-text-heading-grid-6 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-6 ,
+                 body:block.settings.img-with-text-grid-6  %}
+              
+               {% endif %}
+            {% if block.settings.img-with-text-grid-7 != blank %}
+                        
+               {% render 'ingredient-single', 
+                 image:block.settings.img-with-text-img-grid-7 ,
+                 title:block.settings.img-with-text-heading-grid-7 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-7 ,
+                 body:block.settings.img-with-text-grid-7  %}
+              
+              {% endif %}
+            {% if block.settings.img-with-text-grid-8 != blank %}
+                        
+               {% render 'ingredient-single', 
+                 image:block.settings.img-with-text-img-grid-8 ,
+                 title:block.settings.img-with-text-heading-grid-8 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-8 ,
+                 body:block.settings.img-with-text-grid-8  %}
+              
+              {% endif %}
+            {% if block.settings.img-with-text-grid-9 != blank %}
+                        
+               {% render 'ingredient-single', 
+                 image:block.settings.img-with-text-img-grid-9 ,
+                 title:block.settings.img-with-text-heading-grid-9 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-9 ,
+                 body:block.settings.img-with-text-grid-9  %}
+              
+              {% endif %}
+            {% if block.settings.img-with-text-grid-10 != blank %}
+                        
+               {% render 'ingredient-single', 
+                 image:block.settings.img-with-text-img-grid-10 ,
+                 title:block.settings.img-with-text-heading-grid-10 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-10 ,
+                 body:block.settings.img-with-text-grid-10  %}
+              
+              {% endif %}
+            {% if block.settings.img-with-text-grid-11 != blank %}
+                        
+               {% render 'ingredient-single', 
+                 image:block.settings.img-with-text-img-grid-11 ,
+                 title:block.settings.img-with-text-heading-grid-11 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-11 ,
+                 body:block.settings.img-with-text-grid-11  %}
+              
+              {% endif %}
+            {% if block.settings.img-with-text-grid-12 != blank %}
+
+               {% render 'ingredient-single',
+                 image:block.settings.img-with-text-img-grid-12 ,
+                 title:block.settings.img-with-text-heading-grid-12 ,
+                 sub-title:block.settings.img-with-text-subheading-grid-12 ,
+                 body:block.settings.img-with-text-grid-12  %}
+                       
+              {% endif %}
+                      </div>
+                    </div>
+                    
+                  </div>
+                </details>
+              </div>
+          {% when 'Research' %}
+            <div
+                class="accordion {{ block.settings.heading | handleize }} {% if section.settings.layout == 'row' %} content-container color-{{ section.settings.container_color_scheme }} gradient{% endif %}"
+                {{ block.shopify_attributes }}
+              >
+                <details
+                  id="Details-{{ block.id }}-{{ section.id }}"
+                  {% if section.settings.open_first_collapsible_row and forloop.first %}
+                    open
+                  {% endif %}
+                >
+                  <summary id="Summary-{{ block.id }}-{{ section.id }}">
+                    <h3 class="accordion__title h4">
+                      {{ block.settings.heading | default: block.settings.page.title }}
+                    </h3>
+                    {% render 'icon-caret' %}
+                  </summary>
+                  <div
+                    class="accordion__content rte"
+                    id="CollapsibleAccordion-{{ block.id }}-{{ section.id }}"
+                    role="region"
+                    aria-labelledby="Summary-{{ block.id }}-{{ section.id }}"
+                  >
+                    <div class="accordion__item__body">
+                      <div class="research">
+                      {{ block.settings.research }}
+                      </div>
+                    </div>
+                    
+                  </div>
+                </details>
+              </div>
+               {%- endcase -%}
+            {%- endfor -%}
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collapsible Content Block",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "t:sections.collapsible_content.settings.caption.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.collapsible_content.settings.heading.label",
+      "default": "Collapsible content"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.all.heading_size.options__3.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "t:sections.collapsible_content.settings.heading_alignment.label",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.collapsible_content.settings.heading_alignment.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.collapsible_content.settings.heading_alignment.options__2.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.collapsible_content.settings.heading_alignment.options__3.label"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.collapsible_content.settings.layout.label",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:sections.collapsible_content.settings.layout.options__1.label"
+        },
+        {
+          "value": "row",
+          "label": "t:sections.collapsible_content.settings.layout.options__2.label"
+        },
+        {
+          "value": "section",
+          "label": "t:sections.collapsible_content.settings.layout.options__3.label"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        {
+          "value": "accent-1",
+          "label": "t:sections.all.colors.accent_1.label"
+        },
+        {
+          "value": "accent-2",
+          "label": "t:sections.all.colors.accent_2.label"
+        },
+        {
+          "value": "background-1",
+          "label": "t:sections.all.colors.background_1.label"
+        },
+        {
+          "value": "background-2",
+          "label": "t:sections.all.colors.background_2.label"
+        },
+        {
+          "value": "inverse",
+          "label": "t:sections.all.colors.inverse.label"
+        }
+      ],
+      "default": "background-1",
+      "label": "t:sections.all.colors.label"
+    },
+    {
+      "type": "select",
+      "id": "container_color_scheme",
+      "options": [
+        {
+          "value": "accent-1",
+          "label": "t:sections.all.colors.accent_1.label"
+        },
+        {
+          "value": "accent-2",
+          "label": "t:sections.all.colors.accent_2.label"
+        },
+        {
+          "value": "background-1",
+          "label": "t:sections.all.colors.background_1.label"
+        },
+        {
+          "value": "background-2",
+          "label": "t:sections.all.colors.background_2.label"
+        },
+        {
+          "value": "inverse",
+          "label": "t:sections.all.colors.inverse.label"
+        }
+      ],
+      "default": "background-2",
+      "label": "t:sections.collapsible_content.settings.container_color_scheme.label",
+      "info": "t:sections.collapsible_content.settings.container_color_scheme.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_first_collapsible_row",
+      "default": false,
+      "label": "t:sections.collapsible_content.settings.open_first_collapsible_row.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.collapsible_content.settings.header.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.collapsible_content.settings.image.label"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:sections.collapsible_content.settings.image_ratio.options__1.label"
+        },
+        {
+          "value": "small",
+          "label": "t:sections.collapsible_content.settings.image_ratio.options__2.label"
+        },
+        {
+          "value": "large",
+          "label": "t:sections.collapsible_content.settings.image_ratio.options__3.label"
+        }
+      ],
+      "default": "adapt",
+      "label": "t:sections.collapsible_content.settings.image_ratio.label"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "options": [
+        {
+          "value": "image_first",
+          "label": "t:sections.collapsible_content.settings.desktop_layout.options__1.label"
+        },
+        {
+          "value": "image_second",
+          "label": "t:sections.collapsible_content.settings.desktop_layout.options__2.label"
+        }
+      ],
+      "default": "image_second",
+      "label": "t:sections.collapsible_content.settings.desktop_layout.label",
+      "info": "t:sections.collapsible_content.settings.desktop_layout.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image-with-text-blocks",
+      "name": "Image With Text Blocks",
+      "settings": [
+            {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.collapsible_content.settings.heading.label",
+          "default": "Collapsible content"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_checkbox",
+          "label": "Enable to show support message",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "help_text",
+          "label": "Support"
+        },
+        {
+          "type": "text",
+          "id": "support_text1",
+          "label": "Support1"
+        },
+        {
+          "type": "text",
+          "id": "support_text2",
+          "label": "Support2"
+        },
+        {
+          "type": "text",
+          "id": "support_text3",
+          "label": "Support3"
+        },
+        {
+          "type": "text",
+          "id": "support_text4",
+          "label": "Support4"
+        },
+                {
+          "type": "text",
+          "id": "blocks-text",
+          "default": "Text",
+          "label": "Blocks "
+        },
+           {
+              "type": "image_picker",
+               "id": "blocks-img1",
+             "label": "Block Image 1"
+            },
+        {
+          "type": "richtext",
+          "id": "blocks-text1",
+          "label": "Blocks 1"
+        },
+        {
+              "type": "image_picker",
+               "id": "blocks-img2",
+             "label": "Block Image 2"
+            },
+                {
+          "type": "richtext",
+          "id": "blocks-text2",
+          "label": "Blocks 2"
+        },
+        {
+              "type": "image_picker",
+               "id": "blocks-img3",
+             "label": "Block Image 3"
+            },      
+        {
+          "type": "richtext",
+          "id": "blocks-text3",
+          "label": "Blocks 3"
+        },
+        {
+              "type": "image_picker",
+               "id": "blocks-img4",
+             "label": "Block Image 4"
+            },
+              {
+          "type": "richtext",
+          "id": "blocks-text4",
+          "label": "Blocks 4"
+        }
+      ]
+    },
+    {
+      "type": "image-with-text-2col-list",
+      "name": "Image With Text List",
+      "settings": [
+            {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.collapsible_content.settings.heading.label",
+          "default": "Collapsible content"
+        },
+                {
+          "type": "text",
+          "id": "how-touse",
+          "default": "Text",
+          "label": "Blocks "
+        },
+                {
+              "type": "image_picker",
+               "id": "how-touse-img1",
+             "label": "Block Image 1"
+            },
+        {
+          "type": "richtext",
+          "id": "how-touse-1",
+          "label": "Blocks 1"
+        },
+                {
+              "type": "image_picker",
+               "id": "how-touse-img2",
+             "label": "Block Image 2"
+            },
+                {
+          "type": "richtext",
+          "id": "how-touse-2",
+          "label": "Blocks 2"
+        },
+          {
+              "type": "image_picker",
+               "id": "how-touse-img3",
+             "label": "Block Image 3"
+            },
+              {
+          "type": "richtext",
+          "id": "how-touse-3",
+          "label": "Blocks 3"
+        },
+        {
+          "type": "url",
+          "id": "btn2",
+          "label": "Add url"
+        }
+      ]
+    },
+    {
+      "type": "image-with-text-grid",
+      "name": "Image With Text Grid",
+      "settings": [
+            {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.collapsible_content.settings.heading.label",
+          "default": "Collapsible content"
+        },
+                  {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-1",
+             "label": "Block Image 1"
+            },
+                {
+          "type": "text",
+          "id": "img-with-text-heading-grid-1",
+          "default": "Text",
+          "label": "Heading 1"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-1",
+          "label": "Sub Heading 1",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-grid-1",
+          "label": "Text 1"
+        },
+                          {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-2",
+             "label": "Block Image 2"
+            },
+                        {
+          "type": "text",
+          "id": "img-with-text-heading-grid-2",
+          "default": "Text",
+          "label": "Heading 2"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-2",
+          "label": "Sub Heading 2",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+                {
+          "type": "richtext",
+          "id": "img-with-text-grid-2",
+          "label": "Text 2"
+        },
+                          {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-3",
+             "label": "Block Image 3"
+            },
+                        {
+          "type": "text",
+          "id": "img-with-text-heading-grid-3",
+          "default": "Text",
+          "label": "Heading 3"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-3",
+          "label": "Sub Heading 3",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+              {
+          "type": "richtext",
+          "id": "img-with-text-grid-3",
+          "label": "Text 3"
+        },
+                          {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-4",
+             "label": "Block Image 4"
+            },
+                        {
+          "type": "text",
+          "id": "img-with-text-heading-grid-4",
+          "default": "Text",
+          "label": "Heading 4"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-4",
+          "label": "Sub Heading 4",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+                      {
+          "type": "richtext",
+          "id": "img-with-text-grid-4",
+          "label": "Text 4"
+        },
+                          {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-5",
+             "label": "Block Image 5"
+            },
+                        {
+          "type": "text",
+          "id": "img-with-text-heading-grid-5",
+          "default": "Text",
+          "label": "Heading 5"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-5",
+          "label": "Sub Heading 5",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+                      {
+          "type": "richtext",
+          "id": "img-with-text-grid-5",
+          "label": "Text 5"
+        },
+                          {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-6",
+             "label": "Block Image 6"
+            },
+                        {
+          "type": "text",
+          "id": "img-with-text-heading-grid-6",
+          "default": "Text",
+          "label": "Heading 6"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-6",
+          "label": "Sub Heading 6",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+                      {
+          "type": "richtext",
+          "id": "img-with-text-grid-6",
+          "label": "Text 6"
+        },
+                          {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-7",
+             "label": "Block Image 7"
+            },
+                        {
+          "type": "text",
+          "id": "img-with-text-heading-grid-7",
+          "default": "Text",
+          "label": "Heading 7"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-7",
+          "label": "Sub Heading 7",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+                      {
+          "type": "richtext",
+          "id": "img-with-text-grid-7",
+          "label": "Text 7"
+        },
+                          {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-8",
+             "label": "Block Image 8"
+            },
+                        {
+          "type": "text",
+          "id": "img-with-text-heading-grid-8",
+          "default": "Text",
+          "label": "Heading 8"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-8",
+          "label": "Sub Heading 8",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+                      {
+          "type": "richtext",
+          "id": "img-with-text-grid-8",
+          "label": "Text 8"
+        },
+                          {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-9",
+             "label": "Block Image 9"
+            },
+                        {
+          "type": "text",
+          "id": "img-with-text-heading-grid-9",
+          "default": "Text",
+          "label": "Heading 9"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-9",
+          "label": "Sub Heading 9",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+                      {
+          "type": "richtext",
+          "id": "img-with-text-grid-9",
+          "label": "Text 9"
+        },
+                          {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-10",
+             "label": "Block Image 10"
+            },
+                        {
+          "type": "text",
+          "id": "img-with-text-heading-grid-10",
+          "default": "Text",
+          "label": "Heading 10"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-10",
+          "label": "Sub Heading 10",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+                      {
+          "type": "richtext",
+          "id": "img-with-text-grid-10",
+          "label": "Text 10"
+        },
+                          {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-11",
+             "label": "Block Image 11"
+            },
+                        {
+          "type": "text",
+          "id": "img-with-text-heading-grid-11",
+          "default": "Text",
+          "label": "Heading 11"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-11",
+          "label": "Sub Heading 11",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+                      {
+          "type": "richtext",
+          "id": "img-with-text-grid-11",
+          "label": "Text 11"
+        },
+                          {
+              "type": "image_picker",
+               "id": "img-with-text-img-grid-12",
+             "label": "Block Image 12"
+            },
+                        {
+          "type": "text",
+          "id": "img-with-text-heading-grid-12",
+          "default": "Text",
+          "label": "Heading 12"
+        },
+        {
+          "type": "richtext",
+          "id": "img-with-text-subheading-grid-12",
+          "label": "Sub Heading 12",
+          "default": "<p><i>Traditionally used to support:</i><b>Hot flashes*, Night sweats*</b></p>"
+        },
+                      {
+          "type": "richtext",
+          "id": "img-with-text-grid-12",
+          "label": "Text 12"
+        }
+      ]
+    },
+    {
+      "type": "Research",
+      "name": "Research",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.collapsible_content.settings.heading.label",
+          "default": "Collapsible content"
+        },
+        {
+          "type": "richtext",
+          "id": "research",
+          "label": "Add text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collapsible Content Block"
+    }
+  ]
+}
+{% endschema %}
