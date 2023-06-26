@@ -130,6 +130,8 @@
                 {%- endif -%}
               {% endform %}
             </div>
+      {%- when 'custom_liquid' -%}
+          <div<{{ block.settings.custom_liquid }}</div>
         {%- endcase -%}
       {%- endfor -%}
     </div>
@@ -263,11 +265,33 @@
       "label": "t:sections.email-signup-banner.settings.desktop_content_alignment.label"
     },
     {
-      "type": "color_scheme",
+      "type": "select",
       "id": "color_scheme",
+      "options": [
+        {
+          "value": "accent-1",
+          "label": "t:sections.all.colors.accent_1.label"
+        },
+        {
+          "value": "accent-2",
+          "label": "t:sections.all.colors.accent_2.label"
+        },
+        {
+          "value": "background-1",
+          "label": "t:sections.all.colors.background_1.label"
+        },
+        {
+          "value": "background-2",
+          "label": "t:sections.all.colors.background_2.label"
+        },
+        {
+          "value": "inverse",
+          "label": "t:sections.all.colors.inverse.label"
+        }
+      ],
+      "default": "background-1",
       "label": "t:sections.all.colors.label",
-      "info": "t:sections.email-signup-banner.settings.color_scheme.info",
-      "default": "background-1"
+      "info": "t:sections.email-signup-banner.settings.color_scheme.info"
     },
     {
       "type": "header",
@@ -361,6 +385,14 @@
           "default": "body",
           "label": "t:sections.email-signup-banner.blocks.paragraph.settings.text_style.label"
         }
+      ]
+    },
+    {
+      "type": "custom_liquid",
+      "name": "Block Custom Liquid",
+      "limit": 1,
+      "settings": [
+       
       ]
     },
     {
